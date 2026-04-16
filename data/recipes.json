@@ -1,0 +1,385 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "name": "Aloo Gobi",
+      "description": "A classic Indian dry curry made with potatoes and cauliflower, spiced with aromatic Indian spices.",
+      "image": "aloo_gobi",
+      "cuisine": "Indian",
+      "meal_type": ["lunch", "dinner"],
+      "difficulty": "Easy",
+      "prep_time": 15,
+      "cook_time": 25,
+      "total_time": 40,
+      "base_servings": 4,
+      "calories_per_serving": 210,
+      "vegetables": ["potato", "cauliflower", "onion", "tomato", "garlic", "ginger", "green chili"],
+      "tags": ["vegetarian", "vegan", "gluten-free", "indian"],
+      "nutrients": {
+        "protein": 5.2,
+        "carbohydrates": 32.4,
+        "fat": 7.8,
+        "fiber": 6.1,
+        "vitamin_c": 78,
+        "vitamin_k": 24,
+        "potassium": 820,
+        "iron": 2.4,
+        "calcium": 65,
+        "magnesium": 38,
+        "vitamin_b6": 0.4,
+        "folate": 45
+      },
+      "ingredients": [
+        { "id": "ing_1", "name": "Potato (medium, cubed)", "quantity": 3, "unit": "pieces", "per_serving": 0.75 },
+        { "id": "ing_2", "name": "Cauliflower florets", "quantity": 400, "unit": "g", "per_serving": 100 },
+        { "id": "ing_3", "name": "Onion (medium, sliced)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_4", "name": "Tomato (chopped)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_5", "name": "Garlic cloves (minced)", "quantity": 4, "unit": "cloves", "per_serving": 1 },
+        { "id": "ing_6", "name": "Ginger (grated)", "quantity": 1, "unit": "inch", "per_serving": 0.25 },
+        { "id": "ing_7", "name": "Green chili", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_8", "name": "Oil", "quantity": 3, "unit": "tbsp", "per_serving": 0.75 },
+        { "id": "ing_9", "name": "Cumin seeds", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_10", "name": "Turmeric powder", "quantity": 0.5, "unit": "tsp", "per_serving": 0.125 },
+        { "id": "ing_11", "name": "Coriander powder", "quantity": 1.5, "unit": "tsp", "per_serving": 0.375 },
+        { "id": "ing_12", "name": "Red chili powder", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_13", "name": "Garam masala", "quantity": 0.5, "unit": "tsp", "per_serving": 0.125 },
+        { "id": "ing_14", "name": "Salt", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_15", "name": "Fresh coriander (chopped)", "quantity": 3, "unit": "tbsp", "per_serving": 0.75 }
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Prepare the Vegetables",
+          "instruction": "Wash and peel the potatoes, then cut them into medium-sized cubes. Break the cauliflower into bite-sized florets. Chop the onions finely, dice the tomatoes, mince the garlic, grate the ginger, and slit the green chilies.",
+          "duration_seconds": 0,
+          "tip": "Soak potato cubes in water for 10 minutes to remove excess starch for crispier texture."
+        },
+        {
+          "step": 2,
+          "title": "Heat Oil and Temper Spices",
+          "instruction": "Heat oil in a large kadai or wok on medium-high heat. Once hot, add cumin seeds and let them splutter for 30 seconds. This releases their aroma into the oil, which is the base of the entire dish.",
+          "duration_seconds": 30,
+          "tip": "Oil must be hot enough. Test by dropping one cumin seed; it should sizzle immediately."
+        },
+        {
+          "step": 3,
+          "title": "Saute Onions, Garlic and Ginger",
+          "instruction": "Add sliced onions and saute on medium heat until golden brown, about 6 to 7 minutes. Then add minced garlic, grated ginger, and green chilies. Stir and cook for 2 more minutes until the raw smell disappears completely.",
+          "duration_seconds": 480,
+          "tip": "Do not rush the onion browning. This builds the flavor foundation of your curry."
+        },
+        {
+          "step": 4,
+          "title": "Add Tomatoes and Spices",
+          "instruction": "Add chopped tomatoes, turmeric, coriander powder, red chili powder, and salt. Mix well and cook on medium heat for 4 to 5 minutes until tomatoes soften completely and oil starts separating from the masala.",
+          "duration_seconds": 300,
+          "tip": "The oil separating is a sign your masala is perfectly cooked. Do not skip this step."
+        },
+        {
+          "step": 5,
+          "title": "Add Potatoes First",
+          "instruction": "Add the potato cubes first. Toss to coat them well with the masala. Cover and cook on medium-low heat for 8 minutes, stirring once halfway. Potatoes need a head start as they take longer to cook than cauliflower.",
+          "duration_seconds": 480,
+          "tip": "Keep flame on medium-low to avoid burning the bottom. Add 1 to 2 tablespoons of water if needed."
+        },
+        {
+          "step": 6,
+          "title": "Add Cauliflower",
+          "instruction": "Add cauliflower florets and gently toss everything together. Cover and cook for another 10 to 12 minutes on medium-low heat, stirring every 3 to 4 minutes. Both vegetables should be tender but not mushy.",
+          "duration_seconds": 720,
+          "tip": "Do not add water. Dry cooking gives Aloo Gobi its characteristic texture."
+        },
+        {
+          "step": 7,
+          "title": "Finish with Garam Masala",
+          "instruction": "Once both vegetables are cooked through, sprinkle garam masala over the dish. Toss gently and cook uncovered for 2 minutes on high heat to roast the garam masala and dry any remaining moisture.",
+          "duration_seconds": 120,
+          "tip": "Cooking garam masala at the end preserves its delicate aromatic oils."
+        },
+        {
+          "step": 8,
+          "title": "Garnish and Serve",
+          "instruction": "Turn off the heat. Garnish generously with freshly chopped coriander leaves. Your Aloo Gobi is ready. Serve hot with roti, paratha, or steamed rice. It also pairs beautifully with dal.",
+          "duration_seconds": 0,
+          "tip": "A squeeze of lemon juice just before serving brightens all the flavors."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Palak Paneer",
+      "description": "A rich and creamy Indian dish of fresh spinach puree with soft paneer cubes, mildly spiced for a comforting meal.",
+      "image": "palak_paneer",
+      "cuisine": "Indian",
+      "meal_type": ["lunch", "dinner"],
+      "difficulty": "Medium",
+      "prep_time": 20,
+      "cook_time": 30,
+      "total_time": 50,
+      "base_servings": 4,
+      "calories_per_serving": 285,
+      "vegetables": ["spinach", "onion", "tomato", "garlic", "ginger", "green chili"],
+      "tags": ["vegetarian", "gluten-free", "high-protein", "indian"],
+      "nutrients": {
+        "protein": 14.5,
+        "carbohydrates": 12.3,
+        "fat": 18.2,
+        "fiber": 3.8,
+        "vitamin_c": 42,
+        "vitamin_k": 290,
+        "vitamin_a": 520,
+        "potassium": 680,
+        "iron": 4.8,
+        "calcium": 380,
+        "magnesium": 65,
+        "vitamin_b12": 0.6,
+        "folate": 120
+      },
+      "ingredients": [
+        { "id": "ing_1", "name": "Fresh spinach (palak)", "quantity": 500, "unit": "g", "per_serving": 125 },
+        { "id": "ing_2", "name": "Paneer (cubed)", "quantity": 250, "unit": "g", "per_serving": 62.5 },
+        { "id": "ing_3", "name": "Onion (finely chopped)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_4", "name": "Tomato (pureed)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_5", "name": "Garlic cloves", "quantity": 5, "unit": "cloves", "per_serving": 1.25 },
+        { "id": "ing_6", "name": "Ginger", "quantity": 1.5, "unit": "inch", "per_serving": 0.375 },
+        { "id": "ing_7", "name": "Green chili", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_8", "name": "Fresh cream", "quantity": 4, "unit": "tbsp", "per_serving": 1 },
+        { "id": "ing_9", "name": "Oil or ghee", "quantity": 3, "unit": "tbsp", "per_serving": 0.75 },
+        { "id": "ing_10", "name": "Cumin seeds", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_11", "name": "Bay leaf", "quantity": 1, "unit": "piece", "per_serving": 0.25 },
+        { "id": "ing_12", "name": "Turmeric powder", "quantity": 0.25, "unit": "tsp", "per_serving": 0.0625 },
+        { "id": "ing_13", "name": "Coriander powder", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_14", "name": "Garam masala", "quantity": 0.75, "unit": "tsp", "per_serving": 0.1875 },
+        { "id": "ing_15", "name": "Salt", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_16", "name": "Kasuri methi (dried fenugreek)", "quantity": 1, "unit": "tsp", "per_serving": 0.25 },
+        { "id": "ing_17", "name": "Ice water (for blanching)", "quantity": 500, "unit": "ml", "per_serving": 125 }
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Blanch the Spinach",
+          "instruction": "Bring a large pot of water to a rolling boil. Add spinach leaves and blanch for exactly 2 minutes. Immediately transfer to a bowl of ice-cold water to stop cooking and preserve the bright green color. Drain well after 2 minutes.",
+          "duration_seconds": 240,
+          "tip": "The ice bath is non-negotiable for that restaurant-quality vibrant green color."
+        },
+        {
+          "step": 2,
+          "title": "Blend Spinach Puree",
+          "instruction": "In a blender, combine the blanched spinach, green chilies, and half the ginger. Blend to a completely smooth, velvety puree. Do not add extra water as the residual moisture is enough. Set aside.",
+          "duration_seconds": 0,
+          "tip": "For extra smooth texture, blend twice and pass through a strainer for restaurant quality."
+        },
+        {
+          "step": 3,
+          "title": "Fry the Paneer",
+          "instruction": "Heat 1 tablespoon of ghee or oil in a pan. Add paneer cubes and fry on medium-high heat for 2 to 3 minutes per side until golden. Remove and immediately place in warm water to keep them soft. This prevents rubberiness.",
+          "duration_seconds": 360,
+          "tip": "Soaking fried paneer in warm water for 5 minutes keeps it melt-in-mouth soft."
+        },
+        {
+          "step": 4,
+          "title": "Build the Masala Base",
+          "instruction": "In the same pan, heat remaining oil or ghee. Add bay leaf and cumin seeds. Once they splutter, add onions and cook on medium heat for 8 to 9 minutes until deep golden brown. Add remaining garlic and ginger paste, cook 2 minutes.",
+          "duration_seconds": 660,
+          "tip": "Deeply caramelized onions are what separate good palak paneer from great palak paneer."
+        },
+        {
+          "step": 5,
+          "title": "Add Tomato and Spices",
+          "instruction": "Add pureed tomatoes, turmeric, coriander powder, and salt. Cook on medium heat for 5 to 6 minutes, stirring frequently, until the masala thickens and oil separates clearly on the sides.",
+          "duration_seconds": 360,
+          "tip": "The masala must be fully cooked. Raw tomato taste ruins the dish."
+        },
+        {
+          "step": 6,
+          "title": "Add Spinach Puree",
+          "instruction": "Reduce heat to low. Add the spinach puree to the masala. Stir everything together gently. Cook on low heat for 5 minutes. Do not boil vigorously as it discolors the spinach and destroys Vitamin C.",
+          "duration_seconds": 300,
+          "tip": "Keep the flame on low after adding spinach. High heat ruins the color and nutrients."
+        },
+        {
+          "step": 7,
+          "title": "Add Paneer and Cream",
+          "instruction": "Add the fried paneer cubes drained from water. Stir gently so paneer does not break. Add fresh cream and crushed kasuri methi. Stir carefully and cook for 3 minutes on low heat.",
+          "duration_seconds": 180,
+          "tip": "Crush kasuri methi between your palms before adding to release maximum flavor."
+        },
+        {
+          "step": 8,
+          "title": "Finish with Garam Masala",
+          "instruction": "Sprinkle garam masala over the dish. Stir gently and cook for 1 final minute. Taste and adjust salt if needed. Remove bay leaf. Your Palak Paneer is ready, rich, green, and aromatic.",
+          "duration_seconds": 60,
+          "tip": "A drizzle of cream on top right before serving makes it look and taste restaurant-grade."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Mixed Vegetable Stir Fry",
+      "description": "A quick and healthy stir fry with colorful vegetables in a savory sauce.",
+      "image": "stir_fry",
+      "cuisine": "Asian",
+      "meal_type": ["lunch", "dinner"],
+      "difficulty": "Easy",
+      "prep_time": 10,
+      "cook_time": 15,
+      "total_time": 25,
+      "base_servings": 4,
+      "calories_per_serving": 165,
+      "vegetables": ["carrot", "bell pepper", "broccoli", "onion", "garlic", "ginger", "cabbage", "beans"],
+      "tags": ["vegetarian", "vegan", "healthy", "quick"],
+      "nutrients": {
+        "protein": 4.2,
+        "carbohydrates": 22.5,
+        "fat": 6.8,
+        "fiber": 5.4,
+        "vitamin_c": 120,
+        "vitamin_a": 380,
+        "potassium": 520,
+        "iron": 1.8,
+        "calcium": 72
+      },
+      "ingredients": [
+        { "id": "ing_1", "name": "Carrot (julienned)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_2", "name": "Bell pepper (sliced)", "quantity": 2, "unit": "pieces", "per_serving": 0.5 },
+        { "id": "ing_3", "name": "Broccoli florets", "quantity": 200, "unit": "g", "per_serving": 50 },
+        { "id": "ing_4", "name": "Onion (sliced)", "quantity": 1, "unit": "piece", "per_serving": 0.25 },
+        { "id": "ing_5", "name": "Garlic (minced)", "quantity": 4, "unit": "cloves", "per_serving": 1 },
+        { "id": "ing_6", "name": "Ginger (julienned)", "quantity": 1, "unit": "inch", "per_serving": 0.25 },
+        { "id": "ing_7", "name": "Cabbage (shredded)", "quantity": 150, "unit": "g", "per_serving": 37.5 },
+        { "id": "ing_8", "name": "Green beans", "quantity": 100, "unit": "g", "per_serving": 25 },
+        { "id": "ing_9", "name": "Soy sauce", "quantity": 3, "unit": "tbsp", "per_serving": 0.75 },
+        { "id": "ing_10", "name": "Sesame oil", "quantity": 1, "unit": "tbsp", "per_serving": 0.25 },
+        { "id": "ing_11", "name": "Vegetable oil", "quantity": 2, "unit": "tbsp", "per_serving": 0.5 },
+        { "id": "ing_12", "name": "Black pepper", "quantity": 0.5, "unit": "tsp", "per_serving": 0.125 },
+        { "id": "ing_13", "name": "Salt", "quantity": 0.5, "unit": "tsp", "per_serving": 0.125 }
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Prep All Vegetables",
+          "instruction": "Cut all vegetables uniformly. Julienne the carrots, slice bell peppers, break broccoli into small florets, shred cabbage, trim beans. Have everything ready before you start as stir fry moves fast.",
+          "duration_seconds": 0,
+          "tip": "Mise en place is critical for stir fry. Once the wok is hot, there is no time to chop."
+        },
+        {
+          "step": 2,
+          "title": "Make the Sauce",
+          "instruction": "Mix soy sauce and sesame oil in a small bowl. Whisk well and set aside. This sauce will coat the vegetables and create a beautiful glossy finish.",
+          "duration_seconds": 0,
+          "tip": "Adding a pinch of sugar balances the salt in the soy sauce."
+        },
+        {
+          "step": 3,
+          "title": "Heat the Wok",
+          "instruction": "Heat a wok or large pan on maximum heat for 2 minutes until smoking. Add vegetable oil and swirl to coat. The extreme heat gives stir fry its characteristic smoky and charred flavor.",
+          "duration_seconds": 120,
+          "tip": "Never stir fry in a cold wok. High heat is the soul of this technique."
+        },
+        {
+          "step": 4,
+          "title": "Stir Fry Aromatics",
+          "instruction": "Add garlic, ginger, and onion. Stir vigorously for 60 seconds on high heat. They should be fragrant and starting to color at the edges.",
+          "duration_seconds": 60,
+          "tip": "Keep stirring constantly. Nothing should sit still in a hot wok."
+        },
+        {
+          "step": 5,
+          "title": "Add Hard Vegetables",
+          "instruction": "Add carrots, broccoli, and green beans. Stir fry vigorously for 3 to 4 minutes on high heat. Add a splash of water if the pan gets too dry.",
+          "duration_seconds": 240,
+          "tip": "A splash of water will steam-cook the harder vegetables evenly."
+        },
+        {
+          "step": 6,
+          "title": "Add Soft Vegetables",
+          "instruction": "Add bell peppers and cabbage. Stir fry for 2 more minutes. These cook quickly and should retain a slight crunch.",
+          "duration_seconds": 120,
+          "tip": "Overcooked bell peppers lose their sweetness and vibrant color."
+        },
+        {
+          "step": 7,
+          "title": "Add Sauce and Finish",
+          "instruction": "Pour the sauce over the vegetables. Toss everything vigorously for 1 minute until the sauce coats every piece and turns glossy. Add black pepper and salt to taste. Serve immediately.",
+          "duration_seconds": 60,
+          "tip": "Stir fry waits for no one. Serve the moment it is done."
+        }
+      ]
+    }
+  ],
+  "vegetable_aliases": {
+    "aloo": "potato",
+    "gobi": "cauliflower",
+    "palak": "spinach",
+    "shimla mirch": "bell pepper",
+    "capsicum": "bell pepper",
+    "tamatar": "tomato",
+    "pyaz": "onion",
+    "adrak": "ginger",
+    "lehsun": "garlic",
+    "mirch": "chili",
+    "lal mirch": "red chili",
+    "hari mirch": "green chili",
+    "methi": "fenugreek",
+    "matar": "peas",
+    "bhindi": "okra",
+    "ladyfinger": "okra",
+    "karela": "bitter gourd",
+    "lauki": "bottle gourd",
+    "brinjal": "eggplant",
+    "baingan": "eggplant",
+    "aubergine": "eggplant",
+    "gajar": "carrot",
+    "makai": "corn",
+    "corn": "maize",
+    "hara pyaz": "scallion",
+    "spring onion": "scallion",
+    "shakarkandi": "sweet potato",
+    "kathal": "jackfruit",
+    "rajma": "kidney beans",
+    "chana": "chickpeas",
+    "moong": "mung bean"
+  },
+  "nutrient_labels": {
+    "protein": "Protein",
+    "carbohydrates": "Carbohydrates",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "vitamin_c": "Vitamin C",
+    "vitamin_k": "Vitamin K",
+    "vitamin_a": "Vitamin A",
+    "vitamin_b6": "Vitamin B6",
+    "vitamin_b12": "Vitamin B12",
+    "potassium": "Potassium",
+    "iron": "Iron",
+    "calcium": "Calcium",
+    "magnesium": "Magnesium",
+    "folate": "Folate"
+  },
+  "nutrient_units": {
+    "protein": "g",
+    "carbohydrates": "g",
+    "fat": "g",
+    "fiber": "g",
+    "vitamin_c": "mg",
+    "vitamin_k": "mcg",
+    "vitamin_a": "mcg",
+    "vitamin_b6": "mg",
+    "vitamin_b12": "mcg",
+    "potassium": "mg",
+    "iron": "mg",
+    "calcium": "mg",
+    "magnesium": "mg",
+    "folate": "mcg"
+  },
+  "filter_categories": {
+    "high_protein": { "label": "High Protein", "icon": "💪", "key": "protein", "threshold": 10 },
+    "high_fiber": { "label": "High Fiber", "icon": "🌾", "key": "fiber", "threshold": 5 },
+    "vitamin_c_rich": { "label": "Vitamin C Rich", "icon": "🍋", "key": "vitamin_c", "threshold": 30 },
+    "iron_rich": { "label": "Iron Rich", "icon": "🔴", "key": "iron", "threshold": 3 },
+    "calcium_rich": { "label": "Calcium Rich", "icon": "🥛", "key": "calcium", "threshold": 150 },
+    "low_carb": { "label": "Low Carb", "icon": "⚡", "key": "carbohydrates", "threshold": 20, "below": true },
+    "low_fat": { "label": "Low Fat", "icon": "🥗", "key": "fat", "threshold": 10, "below": true },
+    "vitamin_a_rich": { "label": "Vitamin A Rich", "icon": "👁️", "key": "vitamin_a", "threshold": 200 }
+  }
+}

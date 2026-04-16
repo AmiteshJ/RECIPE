@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Voice Chef — Recipe Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #F5F0E8; --charcoal: #1A1A1A; --card-bg: #231F18;
+    --spice: #C8571B; --gold: #D4A847; --herb: #3D6B35;
+    --muted: #7A7060; --surface: #2A2318; --border: rgba(255,255,255,0.08);
+  }
+  html, body { height:100%; font-family:'DM Sans',sans-serif; background:var(--charcoal); color:var(--cream); }
+
+  /* ── Nav ── */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1rem 2.5rem;
+    background:rgba(26,26,26,0.9); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--cream); text-decoration:none; }
+  .logo em { color:var(--gold); font-style:italic; }
+  .back-btn {
+    display:flex; align-items:center; gap:0.4rem;
+    font-size:0.82rem; color:var(--muted); text-decoration:none;
+    padding:0.4rem 1rem; border-radius:999px; border:1px solid var(--border);
+    transition:color 0.2s, border-color 0.2s;
+  }
+  .back-btn:hover { color:var(--cream); border-color:rgba(255,255,255,0.2); }
+
+  /* ── Layout ── */
+  .page { min-height:100vh; padding:7rem 2rem 4rem; max-width:1100px; margin:0 auto; }
+
+  /* ── Stage 1: Mic ── */
+  #stage-mic { display:flex; flex-direction:column; align-items:center; gap:2rem; padding:3rem 0; }
+
+  .stage-label {
+    font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:0.5rem;
+  }
+
+  .stage-title {
+    font-family:'Playfair Display',serif; font-size:2.4rem;
+    text-align:center; line-height:1.2;
+  }
+
+  .stage-hint { font-size:0.9rem; color:var(--muted); text-align:center; max-width:420px; line-height:1.6; }
+
+  /* Mic button */
+  .mic-btn {
+    width:140px; height:140px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #3A2E20, #1A1510);
+    border:2px solid rgba(212,168,71,0.3);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:3.2rem;
+    position:relative; transition:transform 0.2s, box-shadow 0.3s;
+    box-shadow:0 0 0 0 rgba(200,87,27,0);
+  }
+  .mic-btn:hover { transform:scale(1.05); }
+  .mic-btn.recording {
+    border-color:var(--spice);
+    animation:micPulse 1.5s ease-in-out infinite;
+    box-shadow:0 0 0 0 rgba(200,87,27,0.6);
+  }
+  @keyframes micPulse {
+    0% { box-shadow:0 0 0 0 rgba(200,87,27,0.5); }
+    70% { box-shadow:0 0 0 28px rgba(200,87,27,0); }
+    100% { box-shadow:0 0 0 0 rgba(200,87,27,0); }
+  }
+
+  .mic-status { font-size:0.85rem; color:var(--muted); min-height:1.4em; text-align:center; }
+  .mic-status.active { color:var(--spice); }
+
+  /* Transcript display */
+  .transcript-box {
+    width:100%; max-width:560px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:1.2rem 1.5rem;
+    min-height:80px; font-size:1rem; line-height:1.6; color:var(--cream);
+    display:none;
+  }
+  .transcript-box.visible { display:block; }
+
+  /* Detected veg chips */
+  .veg-chips { display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; }
+  .veg-chip {
+    padding:0.35rem 0.9rem; border-radius:999px;
+    background:rgba(212,168,71,0.12); border:1px solid rgba(212,168,71,0.25);
+    font-size:0.82rem; color:var(--gold);
+    animation:chipPop 0.3s cubic-bezier(.23,1,.32,1) both;
+  }
+  @keyframes chipPop {
+    from { transform:scale(0.7); opacity:0; }
+    to { transform:scale(1); opacity:1; }
+  }
+
+  .find-btn {
+    padding:0.9rem 2.5rem; border-radius:999px; border:none;
+    background:linear-gradient(135deg, var(--spice), #E06B2A);
+    color:#fff; font-size:1rem; font-weight:500; cursor:pointer;
+    transition:transform 0.2s, box-shadow 0.2s;
+    display:none;
+  }
+  .find-btn.visible { display:block; }
+  .find-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(200,87,27,0.4); }
+
+  /* ── Stage 2: Results ── */
+  #stage-results { display:none; }
+  #stage-results.visible { display:block; }
+
+  .results-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:1.8rem; flex-wrap:wrap; gap:1rem;
+  }
+
+  .results-title { font-family:'Playfair Display',serif; font-size:1.8rem; }
+  .results-count { font-size:0.82rem; color:var(--muted); margin-top:0.2rem; }
+
+  .retry-btn {
+    padding:0.5rem 1.2rem; border-radius:999px; border:1px solid var(--border);
+    background:transparent; color:var(--cream); font-size:0.82rem;
+    cursor:pointer; transition:border-color 0.2s;
+  }
+  .retry-btn:hover { border-color:rgba(255,255,255,0.3); }
+
+  /* Nutrient filters */
+  .filter-bar {
+    display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;
+  }
+  .filter-pill {
+    padding:0.4rem 1rem; border-radius:999px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--muted); font-size:0.78rem; cursor:pointer;
+    transition:all 0.2s;
+  }
+  .filter-pill:hover { border-color:rgba(255,255,255,0.2); color:var(--cream); }
+  .filter-pill.active { background:rgba(61,107,53,0.2); border-color:rgba(61,107,53,0.5); color:#82C979; }
+
+  /* Recipe flashcards grid */
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+
+  .recipe-card {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:20px; padding:1.8rem; cursor:pointer;
+    transition:transform 0.3s cubic-bezier(.23,1,.32,1), border-color 0.3s, box-shadow 0.3s;
+    animation:cardIn 0.4s ease both;
+    position:relative; overflow:hidden;
+  }
+  .recipe-card::after {
+    content:''; position:absolute; inset:0; border-radius:20px;
+    background:linear-gradient(135deg, rgba(200,87,27,0.05), transparent);
+    opacity:0; transition:opacity 0.3s;
+  }
+  .recipe-card:hover { transform:translateY(-6px); border-color:rgba(200,87,27,0.35); box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+  .recipe-card:hover::after { opacity:1; }
+
+  @keyframes cardIn {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem; }
+  .card-emoji { font-size:2rem; }
+  .match-badge {
+    font-size:0.7rem; padding:0.25rem 0.7rem; border-radius:999px;
+    background:rgba(61,107,53,0.2); border:1px solid rgba(61,107,53,0.4);
+    color:#82C979;
+  }
+
+  .card-name { font-family:'Playfair Display',serif; font-size:1.4rem; margin-bottom:0.4rem; }
+  .card-desc { font-size:0.82rem; color:var(--muted); line-height:1.55; margin-bottom:1.2rem; }
+
+  .card-meta { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+  .meta-item { font-size:0.78rem; color:var(--muted); display:flex; align-items:center; gap:0.3rem; }
+
+  .card-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.2rem; }
+  .tag { padding:0.2rem 0.6rem; border-radius:6px; font-size:0.7rem; background:rgba(255,255,255,0.05); color:var(--muted); }
+
+  .nutrient-bar-row { margin-bottom:0.6rem; }
+  .nutrient-label { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); margin-bottom:0.25rem; }
+  .nutrient-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+  .nutrient-fill { height:100%; border-radius:4px; transition:width 0.6s ease; }
+  .fill-protein { background:linear-gradient(90deg,#7C3AED,#A78BFA); }
+  .fill-fiber { background:linear-gradient(90deg,#059669,#34D399); }
+  .fill-vitamin_c { background:linear-gradient(90deg,#D97706,#FCD34D); }
+  .fill-iron { background:linear-gradient(90deg,#B91C1C,#F87171); }
+  .fill-calcium { background:linear-gradient(90deg,#1D4ED8,#60A5FA); }
+
+  .select-btn {
+    width:100%; padding:0.75rem; border-radius:12px; border:none;
+    background:rgba(200,87,27,0.15); color:var(--spice);
+    font-size:0.88rem; font-weight:500; cursor:pointer;
+    transition:background 0.2s, color 0.2s;
+  }
+  .select-btn:hover { background:var(--spice); color:#fff; }
+
+  .missing-vegs {
+    font-size:0.72rem; color:rgba(200,87,27,0.6);
+    margin-bottom:0.8rem;
+  }
+
+  /* ── Loading ── */
+  .loading { text-align:center; padding:4rem; color:var(--muted); }
+  .spinner {
+    width:36px; height:36px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.1);
+    border-top-color:var(--spice);
+    animation:spin 0.8s linear infinite;
+    margin:0 auto 1rem;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ── No results ── */
+  .no-results { text-align:center; padding:4rem; }
+  .no-results h3 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:0.8rem; }
+  .no-results p { color:var(--muted); font-size:0.9rem; line-height:1.6; }
+
+  @media(max-width:600px) {
+    nav { padding:1rem 1.2rem; }
+    .stage-title { font-size:1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Recipe<em>Lens</em></a>
+  <a href="/" class="back-btn">← Back</a>
+</nav>
+
+<div class="page">
+
+  <!-- STAGE 1: Voice Input -->
+  <div id="stage-mic">
+    <div>
+      <p class="stage-label">🎙️ Voice Chef — Mode 01</p>
+      <h1 class="stage-title">Tell me what's in<br>your kitchen</h1>
+    </div>
+    <p class="stage-hint">
+      Press the mic and speak the vegetables you have. Try: <em>"I have potato, cauliflower, and onion"</em>
+      or Hindi: <em>"Aloo, gobi, aur tamatar hai"</em>
+    </p>
+
+    <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Click to start recording">
+      🎙️
+    </button>
+
+    <p class="mic-status" id="micStatus">Click the mic to start speaking</p>
+
+    <div class="transcript-box" id="transcriptBox"></div>
+
+    <div class="veg-chips" id="vegChips"></div>
+
+    <button class="find-btn" id="findBtn" onclick="findRecipes()">
+      🍳 Find Recipes
+    </button>
+  </div>
+
+  <!-- STAGE 2: Results -->
+  <div id="stage-results">
+    <div class="results-header">
+      <div>
+        <h2 class="results-title">Suggested Recipes</h2>
+        <p class="results-count" id="resultsCount"></p>
+      </div>
+      <button class="retry-btn" onclick="resetToMic()">🎙️ Try Again</button>
+    </div>
+
+    <!-- Nutrient filters -->
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-pill active" data-filter="" onclick="applyFilter(this)">All Recipes</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let recognition = null;
+let isRecording = false;
+let detectedVegs = [];
+let allCards = [];
+let activeFilter = '';
+let finalTranscript = '';
+
+// ── Speech Recognition ────────────────────────────────────────────────────────
+function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const rec = new SR();
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.lang = 'en-IN'; // Indian English — supports Hindi transliteration
+
+  rec.onresult = (e) => {
+    let interim = '';
+    finalTranscript = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    updateTranscript((finalTranscript + interim).trim());
+  };
+
+  rec.onend = () => {
+    if (isRecording) {
+      // Auto-restart to keep listening
+      try { rec.start(); } catch(ex) {}
+    }
+  };
+
+  rec.onerror = (e) => {
+    setStatus('Speech error: ' + e.error + '. Try typing below.', false);
+    stopRecording();
+  };
+
+  return rec;
+}
+
+function toggleMic() {
+  if (isRecording) stopRecording();
+  else startRecording();
+}
+
+function startRecording() {
+  if (!recognition) recognition = initSpeechRecognition();
+  if (!recognition) {
+    setStatus('Browser does not support speech. Please type your vegetables below.', false);
+    showTypingFallback();
+    return;
+  }
+  finalTranscript = '';
+  isRecording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micBtn').textContent = '⏹️';
+  setStatus('Listening... speak now', true);
+  try { recognition.start(); } catch(e) {}
+}
+
+function stopRecording() {
+  isRecording = false;
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('micBtn').textContent = '🎙️';
+  const transcript = document.getElementById('transcriptBox').textContent.trim();
+  if (transcript) {
+    setStatus('Processing...', false);
+    processTranscript(transcript);
+  } else {
+    setStatus('Nothing heard. Try again.', false);
+  }
+}
+
+function setStatus(msg, active) {
+  const el = document.getElementById('micStatus');
+  el.textContent = msg;
+  el.className = 'mic-status' + (active ? ' active' : '');
+}
+
+function updateTranscript(text) {
+  const box = document.getElementById('transcriptBox');
+  box.textContent = text;
+  box.classList.add('visible');
+}
+
+// ── Process transcript via API ────────────────────────────────────────────────
+async function processTranscript(text) {
+  try {
+    const res = await fetch('/api/voice/process', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({transcript: text})
+    });
+    const data = await res.json();
+    detectedVegs = data.vegetables || [];
+    renderVegChips(detectedVegs);
+    if (detectedVegs.length > 0) {
+      setStatus(`Found ${detectedVegs.length} vegetable${detectedVegs.length>1?'s':''}! Click "Find Recipes" to continue.`, false);
+      document.getElementById('findBtn').classList.add('visible');
+    } else {
+      setStatus('No vegetables recognized. Try speaking more clearly or type them.', false);
+    }
+  } catch(e) {
+    setStatus('Error processing speech. Please try again.', false);
+  }
+}
+
+function renderVegChips(vegs) {
+  const container = document.getElementById('vegChips');
+  container.innerHTML = '';
+  vegs.forEach((v, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'veg-chip';
+    chip.textContent = '🥦 ' + v.charAt(0).toUpperCase() + v.slice(1);
+    chip.style.animationDelay = (i * 0.06) + 's';
+    container.appendChild(chip);
+  });
+}
+
+// ── Typing fallback ────────────────────────────────────────────────────────────
+function showTypingFallback() {
+  const box = document.getElementById('transcriptBox');
+  box.innerHTML = '';
+  box.classList.add('visible');
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Type vegetables separated by commas, e.g. potato, spinach, onion';
+  input.style.cssText = 'width:100%;background:transparent;border:none;outline:none;color:var(--cream);font-size:1rem;font-family:inherit;';
+  input.oninput = () => {
+    const parts = input.value.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      processTranscript(parts.join(' '));
+    }
+  };
+  box.appendChild(input);
+  input.focus();
+}
+
+// ── Find Recipes ───────────────────────────────────────────────────────────────
+async function findRecipes() {
+  showResultsStage();
+  await loadRecipes(detectedVegs, activeFilter);
+}
+
+async function loadRecipes(vegs, filter) {
+  document.getElementById('cardsGrid').innerHTML = `<div class="loading"><div class="spinner"></div><p>Finding perfect recipes...</p></div>`;
+  try {
+    const res = await fetch('/api/suggest', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({vegetables: vegs, filter: filter || null})
+    });
+    const data = await res.json();
+    allCards = data.cards || [];
+    renderCards(allCards);
+    document.getElementById('resultsCount').textContent =
+      `${allCards.length} recipe${allCards.length!==1?'s':''} found for: ${vegs.join(', ')}`;
+  } catch(e) {
+    document.getElementById('cardsGrid').innerHTML = `<div class="no-results"><h3>Something went wrong</h3><p>Please try again.</p></div>`;
+  }
+}
+
+function showResultsStage() {
+  document.getElementById('stage-mic').style.display = 'none';
+  document.getElementById('stage-results').classList.add('visible');
+  loadFilters();
+}
+
+async function loadFilters() {
+  try {
+    const res = await fetch('/api/filters');
+    const filters = await res.json();
+    const bar = document.getElementById('filterBar');
+    bar.innerHTML = `<button class="filter-pill active" data-filter="" onclick="applyFilter(this)">All Recipes</button>`;
+    Object.entries(filters).forEach(([key, cfg]) => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-pill';
+      btn.dataset.filter = key;
+      btn.textContent = `${cfg.icon} ${cfg.label}`;
+      btn.onclick = () => applyFilter(btn);
+      bar.appendChild(btn);
+    });
+  } catch(e) {}
+}
+
+function applyFilter(btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  loadRecipes(detectedVegs, activeFilter);
+}
+
+// ── Render recipe cards ────────────────────────────────────────────────────────
+const EMOJIS = {
+  'Aloo Gobi': '🥔', 'Palak Paneer': '🥬', 'Mixed Vegetable Stir Fry': '🥦',
+  default: '🍲'
+};
+
+function renderCards(cards) {
+  const grid = document.getElementById('cardsGrid');
+  if (cards.length === 0) {
+    grid.innerHTML = `<div class="no-results" style="grid-column:1/-1">
+      <h3>No recipes found</h3>
+      <p>Try changing the filter or adding more vegetables.</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = '';
+  cards.forEach((card, i) => {
+    const el = document.createElement('div');
+    el.className = 'recipe-card';
+    el.style.animationDelay = (i * 0.07) + 's';
+    el.innerHTML = buildCardHTML(card);
+    el.querySelector('.select-btn').onclick = () => openRecipe(card.id);
+    grid.appendChild(el);
+    // Animate nutrient bars after insertion
+    setTimeout(() => {
+      el.querySelectorAll('.nutrient-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }, 100 + i * 50);
+  });
+}
+
+function buildCardHTML(card) {
+  const emoji = EMOJIS[card.name] || EMOJIS.default;
+  const diff = {Easy:'🟢',Medium:'🟡',Hard:'🔴'};
+
+  const nutrients = card.nutrients;
+  const bars = [
+    {key:'protein', label:'Protein', max:30, cls:'fill-protein'},
+    {key:'fiber', label:'Fiber', max:15, cls:'fill-fiber'},
+    {key:'vitamin_c', label:'Vitamin C', max:200, cls:'fill-vitamin_c'},
+    {key:'iron', label:'Iron', max:10, cls:'fill-iron'},
+    {key:'calcium', label:'Calcium', max:500, cls:'fill-calcium'},
+  ].filter(b => nutrients[b.key] != null).slice(0,3);
+
+  const barsHTML = bars.map(b => {
+    const val = nutrients[b.key] || 0;
+    const pct = Math.min((val/b.max)*100, 100);
+    return `<div class="nutrient-bar-row">
+      <div class="nutrient-label"><span>${b.label}</span><span>${val}${b.key==='vitamin_c'?'mg':'g'}</span></div>
+      <div class="nutrient-bar"><div class="nutrient-fill ${b.cls}" data-width="${pct}" style="width:0%"></div></div>
+    </div>`;
+  }).join('');
+
+  const missingHTML = card.missing.length > 0
+    ? `<p class="missing-vegs">Also needs: ${card.missing.slice(0,3).join(', ')}</p>`
+    : '';
+
+  return `
+    <div class="card-header">
+      <div class="card-emoji">${emoji}</div>
+      <div class="match-badge">${card.coverage_pct}% match</div>
+    </div>
+    <h3 class="card-name">${card.name}</h3>
+    <p class="card-desc">${card.description}</p>
+    <div class="card-meta">
+      <span class="meta-item">⏱️ ${card.total_time} min</span>
+      <span class="meta-item">${diff[card.difficulty]||'🟡'} ${card.difficulty}</span>
+      <span class="meta-item">🔥 ${card.calories} kcal</span>
+    </div>
+    <div class="card-tags">${card.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    ${barsHTML}
+    ${missingHTML}
+    <button class="select-btn">View Recipe & Start Cooking →</button>
+  `;
+}
+
+function openRecipe(id) {
+  window.location.href = `/recipe/${id}`;
+}
+
+function resetToMic() {
+  document.getElementById('stage-mic').style.display = 'flex';
+  document.getElementById('stage-results').classList.remove('visible');
+  document.getElementById('transcriptBox').classList.remove('visible');
+  document.getElementById('transcriptBox').textContent = '';
+  document.getElementById('vegChips').innerHTML = '';
+  document.getElementById('findBtn').classList.remove('visible');
+  detectedVegs = [];
+  setStatus('Click the mic to start speaking');
+}
+</script>
+</body>
+</html>

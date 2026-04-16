@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Recipe — Recipe Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --cream:#F5F0E8;--charcoal:#1A1A1A;--card-bg:#231F18;
+    --spice:#C8571B;--gold:#D4A847;--herb:#3D6B35;
+    --muted:#7A7060;--surface:#2A2318;--border:rgba(255,255,255,0.08);
+  }
+  html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--charcoal);color:var(--cream);}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(26,26,26,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+  .logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);text-decoration:none;}
+  .logo em{color:var(--gold);font-style:italic;}
+  .back-btn{display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:var(--muted);text-decoration:none;padding:0.4rem 1rem;border-radius:999px;border:1px solid var(--border);}
+  .back-btn:hover{color:var(--cream);}
+
+  .page{max-width:960px;margin:0 auto;padding:7rem 2rem 5rem;}
+
+  /* ── Loading ── */
+  .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:1.5rem;}
+  .spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,0.08);border-top-color:var(--spice);animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ── Recipe Hero ── */
+  .recipe-hero{margin-bottom:3rem;}
+  .recipe-eyebrow{display:flex;align-items:center;gap:0.8rem;font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;}
+  .cuisine-badge{padding:0.25rem 0.8rem;border-radius:999px;border:1px solid var(--border);color:var(--gold);}
+  .recipe-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1.1;margin-bottom:1rem;}
+  .recipe-desc{font-size:1rem;color:var(--muted);line-height:1.7;max-width:620px;margin-bottom:2rem;}
+
+  .recipe-meta-strip{display:flex;flex-wrap:wrap;gap:1.5rem;padding:1.5rem;background:var(--surface);border-radius:16px;border:1px solid var(--border);margin-bottom:2.5rem;}
+  .meta-block{display:flex;flex-direction:column;gap:0.2rem;}
+  .meta-key{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);}
+  .meta-val{font-size:1.1rem;font-weight:500;}
+
+  /* ── Serving scaler ── */
+  .serving-section{margin-bottom:2.5rem;}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:1.2rem;}
+  .serving-control{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem;}
+  .serving-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--cream);font-size:1.2rem;cursor:pointer;transition:background 0.2s,border-color 0.2s;display:flex;align-items:center;justify-content:center;}
+  .serving-btn:hover{background:rgba(200,87,27,0.15);border-color:var(--spice);}
+  .serving-display{font-family:'Playfair Display',serif;font-size:2rem;min-width:60px;text-align:center;}
+  .serving-label{font-size:0.82rem;color:var(--muted);}
+
+  /* ── Ingredients ── */
+  .ingredients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.8rem;margin-bottom:2.5rem;}
+  .ingredient-card{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:border-color 0.2s;}
+  .ingredient-card:hover{border-color:rgba(212,168,71,0.3);}
+  .ing-qty{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);min-width:70px;font-weight:700;}
+  .ing-name{font-size:0.88rem;color:var(--cream);line-height:1.3;}
+
+  /* ── Nutrients ── */
+  .nutrients-section{margin-bottom:3rem;}
+  .nutrients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8rem;}
+  .nutrient-card{padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;gap:0.3rem;}
+  .nutrient-name{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);}
+  .nutrient-value{font-family:'Playfair Display',serif;font-size:1.5rem;}
+  .nutrient-unit{font-size:0.72rem;color:var(--muted);}
+
+  /* ── Start cooking button ── */
+  .start-btn{
+    width:100%;padding:1.2rem;border-radius:20px;border:none;
+    background:linear-gradient(135deg,var(--spice),#E06B2A);
+    color:#fff;font-size:1.1rem;font-weight:500;cursor:pointer;
+    transition:transform 0.2s,box-shadow 0.2s;
+    display:flex;align-items:center;justify-content:center;gap:0.8rem;
+    margin-bottom:3rem;letter-spacing:0.02em;
+  }
+  .start-btn:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(200,87,27,0.5);}
+
+  /* ═══════════════════════════════════════════════════════
+     RECIPE BOOK — Full screen cooking mode
+  ═══════════════════════════════════════════════════════ */
+  #recipebook{
+    position:fixed;inset:0;z-index:1000;
+    background:#0E0C08;
+    display:none;flex-direction:column;
+    font-family:'DM Sans',sans-serif;
+  }
+  #recipebook.open{display:flex;}
+
+  .rb-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1.2rem 2.5rem;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .rb-recipe-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);}
+  .rb-progress-wrap{flex:1;margin:0 2rem;height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+  .rb-progress-fill{height:100%;background:linear-gradient(90deg,var(--spice),var(--gold));border-radius:4px;transition:width 0.5s ease;}
+  .rb-step-counter{font-size:0.82rem;color:var(--muted);}
+  .rb-close{background:none;border:1px solid rgba(255,255,255,0.12);color:var(--cream);padding:0.4rem 1rem;border-radius:999px;cursor:pointer;font-size:0.82rem;transition:border-color 0.2s;}
+  .rb-close:hover{border-color:rgba(255,255,255,0.3);}
+
+  .rb-body{
+    flex:1;overflow:hidden;
+    display:grid;grid-template-columns:1fr 380px;
+  }
+
+  /* Step content */
+  .rb-step-panel{
+    padding:4rem 4rem 2rem;
+    overflow-y:auto;
+    display:flex;flex-direction:column;
+    gap:2rem;
+  }
+
+  .rb-step-num{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--spice);}
+  .rb-step-title{font-family:'Playfair Display',serif;font-size:2.8rem;line-height:1.1;}
+  .rb-step-instruction{
+    font-size:1.15rem;line-height:1.85;color:rgba(245,240,232,0.88);
+    max-width:560px;
+  }
+  .rb-step-instruction strong{color:var(--gold);}
+
+  .rb-tip-box{
+    padding:1.2rem 1.5rem;border-radius:14px;
+    background:rgba(61,107,53,0.12);border:1px solid rgba(61,107,53,0.25);
+    display:flex;gap:0.8rem;align-items:flex-start;
+    max-width:560px;
+  }
+  .rb-tip-icon{font-size:1.2rem;flex-shrink:0;margin-top:0.1rem;}
+  .rb-tip-text{font-size:0.9rem;color:rgba(245,240,232,0.7);line-height:1.6;}
+
+  /* Timer */
+  .rb-timer-section{display:flex;flex-direction:column;gap:0.8rem;align-items:flex-start;}
+  .rb-timer-display{
+    font-family:'Playfair Display',serif;font-size:3.5rem;
+    color:var(--spice);line-height:1;
+    transition:color 0.3s;
+  }
+  .rb-timer-display.done{color:#82C979;}
+  .rb-timer-btn{
+    padding:0.6rem 1.5rem;border-radius:999px;border:1px solid var(--spice);
+    background:rgba(200,87,27,0.12);color:var(--spice);font-size:0.85rem;cursor:pointer;
+    transition:background 0.2s;
+  }
+  .rb-timer-btn:hover{background:rgba(200,87,27,0.25);}
+
+  /* Side panel */
+  .rb-side-panel{
+    border-left:1px solid rgba(255,255,255,0.06);
+    padding:2rem 1.5rem;
+    overflow-y:auto;
+    display:flex;flex-direction:column;
+    gap:1.5rem;
+  }
+  .rb-side-title{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;}
+  .rb-step-list{display:flex;flex-direction:column;gap:0.4rem;}
+  .rb-step-dot{
+    display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0.8rem;border-radius:10px;cursor:pointer;
+    transition:background 0.2s;font-size:0.85rem;color:var(--muted);
+  }
+  .rb-step-dot:hover{background:rgba(255,255,255,0.04);}
+  .rb-step-dot.current{background:rgba(200,87,27,0.12);color:var(--cream);}
+  .rb-step-dot.done{color:rgba(130,201,121,0.7);}
+  .dot-num{
+    width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:0.72rem;
+    background:rgba(255,255,255,0.06);flex-shrink:0;
+  }
+  .rb-step-dot.current .dot-num{background:var(--spice);color:#fff;}
+  .rb-step-dot.done .dot-num{background:rgba(61,107,53,0.4);color:#82C979;}
+
+  /* Voice indicator */
+  .voice-indicator{
+    display:flex;align-items:center;gap:0.6rem;padding:0.7rem 1rem;
+    border-radius:12px;background:rgba(212,168,71,0.08);border:1px solid rgba(212,168,71,0.15);
+  }
+  .voice-bars{display:flex;align-items:center;gap:3px;height:20px;}
+  .voice-bar{width:3px;background:var(--gold);border-radius:3px;animation:voiceAnim var(--d,0.6s) ease-in-out infinite alternate;}
+  @keyframes voiceAnim{to{transform:scaleY(0.2);}}
+  .voice-label{font-size:0.78rem;color:var(--gold);}
+
+  /* Keyword hint */
+  .keyword-hints{display:flex;flex-wrap:wrap;gap:0.4rem;}
+  .kw-badge{padding:0.3rem 0.8rem;border-radius:999px;border:1px solid var(--border);font-size:0.72rem;color:var(--muted);}
+  .kw-badge span{color:var(--cream);}
+
+  /* ── Nav controls (bottom) ── */
+  .rb-controls{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1.2rem 4rem;
+    border-top:1px solid rgba(255,255,255,0.06);
+    background:rgba(14,12,8,0.95);
+    gap:1rem;
+  }
+  .rb-nav-btn{
+    display:flex;align-items:center;gap:0.6rem;
+    padding:0.8rem 2rem;border-radius:999px;border:1px solid var(--border);
+    background:transparent;color:var(--cream);font-size:0.9rem;cursor:pointer;
+    transition:border-color 0.2s,background 0.2s;min-width:140px;justify-content:center;
+  }
+  .rb-nav-btn:hover:not(:disabled){border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);}
+  .rb-nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+  .rb-nav-next{
+    background:linear-gradient(135deg,var(--spice),#E06B2A);border-color:transparent;
+  }
+  .rb-nav-next:hover:not(:disabled){background:linear-gradient(135deg,#D9631F,#EF7530);border-color:transparent;}
+  .rb-voice-toggle{
+    width:48px;height:48px;border-radius:50%;border:1px solid var(--border);
+    background:var(--surface);color:var(--cream);font-size:1.2rem;cursor:pointer;
+    transition:border-color 0.2s,background 0.2s;
+  }
+  .rb-voice-toggle.speaking{border-color:var(--gold);background:rgba(212,168,71,0.12);}
+
+  /* ── Final step ── */
+  .rb-final{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2rem;text-align:center;padding:3rem;
+  }
+  .rb-final-icon{font-size:5rem;}
+  .rb-final-title{font-family:'Playfair Display',serif;font-size:3rem;}
+  .rb-final-sub{font-size:1rem;color:var(--muted);max-width:400px;line-height:1.7;}
+  .rb-final-btn{
+    padding:0.9rem 2.5rem;border-radius:999px;border:none;
+    background:linear-gradient(135deg,var(--herb),#4A8A41);color:#fff;
+    font-size:1rem;cursor:pointer;transition:transform 0.2s;
+  }
+  .rb-final-btn:hover{transform:translateY(-2px);}
+
+  @media(max-width:768px){
+    .rb-body{grid-template-columns:1fr;}
+    .rb-side-panel{display:none;}
+    .rb-step-panel{padding:2rem 1.5rem;}
+    .rb-controls{padding:1rem 1.5rem;}
+    .rb-step-title{font-size:2rem;}
+    .rb-step-instruction{font-size:1rem;}
+    nav{padding:1rem 1.2rem;}
+    .recipe-meta-strip{gap:1rem;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Recipe<em>Lens</em></a>
+  <a href="javascript:history.back()" class="back-btn">← Back</a>
+</nav>
+
+<div class="page" id="mainPage">
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <p style="color:var(--muted)">Loading recipe...</p>
+  </div>
+  <div id="recipeContent" style="display:none"></div>
+</div>
+
+<!-- ═══════════════════════════════ RECIPE BOOK ═══════════════════════════════ -->
+<div id="recipebook">
+  <!-- Header -->
+  <div class="rb-header">
+    <span class="rb-recipe-name" id="rb-recipe-name"></span>
+    <div class="rb-progress-wrap">
+      <div class="rb-progress-fill" id="rb-progress" style="width:0%"></div>
+    </div>
+    <span class="rb-step-counter" id="rb-step-counter"></span>
+    <button class="rb-close" onclick="closeRecipeBook()">✕ Close</button>
+  </div>
+
+  <!-- Body: step + sidebar -->
+  <div class="rb-body" id="rb-body">
+    <div class="rb-step-panel" id="rb-step-panel">
+      <!-- Injected per step -->
+    </div>
+    <div class="rb-side-panel">
+      <div>
+        <p class="rb-side-title">All Steps</p>
+        <div class="rb-step-list" id="rb-step-list"></div>
+      </div>
+      <div>
+        <p class="rb-side-title">Voice Commands</p>
+        <div class="keyword-hints">
+          <div class="kw-badge"><span>"next"</span> – next step</div>
+          <div class="kw-badge"><span>"previous"</span> – go back</div>
+          <div class="kw-badge"><span>"repeat"</span> – re-read step</div>
+          <div class="kw-badge"><span>"back"</span> – go back</div>
+          <div class="kw-badge"><span>"start timer"</span> – start timer</div>
+          <div class="kw-badge"><span>"stop timer"</span> – stop timer</div>
+          <div class="kw-badge"><span>"tip"</span> – read tip</div>
+          <div class="kw-badge"><span>"done"</span> – step complete</div>
+        </div>
+      </div>
+      <div class="voice-indicator" id="voiceIndicator">
+        <div class="voice-bars">
+          <div class="voice-bar" style="height:8px;--d:0.4s"></div>
+          <div class="voice-bar" style="height:16px;--d:0.5s;animation-delay:0.1s"></div>
+          <div class="voice-bar" style="height:12px;--d:0.35s;animation-delay:0.2s"></div>
+          <div class="voice-bar" style="height:20px;--d:0.6s;animation-delay:0.05s"></div>
+          <div class="voice-bar" style="height:10px;--d:0.45s;animation-delay:0.15s"></div>
+        </div>
+        <span class="voice-label" id="voiceLabel">Voice assistant active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="rb-controls" id="rb-controls">
+    <button class="rb-nav-btn" id="rb-prev" onclick="prevStep()">← Previous</button>
+    <button class="rb-voice-toggle" id="rb-voice-toggle" onclick="toggleVoice()" title="Toggle voice">🔊</button>
+    <button class="rb-nav-btn rb-nav-next" id="rb-next" onclick="nextStep()">Next Step →</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// State
+// ══════════════════════════════════════════════════════════════════
+const RECIPE_ID = parseInt(location.pathname.split('/').pop());
+let recipe = null;
+let currentServings = 4;
+let currentStep = 0;
+let voiceEnabled = true;
+let timerInterval = null;
+let timerRemaining = 0;
+let timerRunning = false;
+let voiceRecognition = null;
+let isVoiceListening = false;
+
+// ══════════════════════════════════════════════════════════════════
+// Load recipe
+// ══════════════════════════════════════════════════════════════════
+async function loadRecipe(servings) {
+  try {
+    const res = await fetch(`/api/recipe/${RECIPE_ID}?servings=${servings}`);
+    if (!res.ok) throw new Error('Not found');
+    recipe = await res.json();
+    currentServings = servings;
+    renderRecipePage();
+  } catch(e) {
+    document.getElementById('loadingScreen').innerHTML = `<h3 style="color:var(--muted)">Recipe not found.</h3>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Render recipe detail page
+// ══════════════════════════════════════════════════════════════════
+function renderRecipePage() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  const content = document.getElementById('recipeContent');
+  content.style.display = 'block';
+  document.title = recipe.name + ' — Recipe Lens';
+
+  const difColor = {Easy:'#82C979',Medium:'#D4A847',Hard:'#EF4444'};
+  const nl = recipe.nutrient_labels || {};
+  const nu = recipe.nutrient_units || {};
+
+  const nutrientsHTML = Object.entries(recipe.scaled_nutrients || recipe.nutrients || {})
+    .map(([k,v]) => `
+      <div class="nutrient-card">
+        <span class="nutrient-name">${nl[k]||k}</span>
+        <span class="nutrient-value">${v}</span>
+        <span class="nutrient-unit">${nu[k]||''} per serving</span>
+      </div>
+    `).join('');
+
+  const ingredientsHTML = (recipe.scaled_ingredients || recipe.ingredients || [])
+    .map(ing => {
+      const qty = ing.scaled_quantity ?? ing.quantity;
+      const display = Number.isInteger(qty) ? qty : Number(qty).toFixed(1);
+      return `<div class="ingredient-card">
+        <span class="ing-qty">${display} ${ing.unit}</span>
+        <span class="ing-name">${ing.name}</span>
+      </div>`;
+    }).join('');
+
+  content.innerHTML = `
+    <div class="recipe-hero">
+      <div class="recipe-eyebrow">
+        <span>📖 Recipe</span>
+        <span class="cuisine-badge">${recipe.cuisine}</span>
+        <span style="color:${difColor[recipe.difficulty]||'#D4A847'}">${recipe.difficulty}</span>
+      </div>
+      <h1 class="recipe-title">${recipe.name}</h1>
+      <p class="recipe-desc">${recipe.description}</p>
+      <div class="recipe-meta-strip">
+        <div class="meta-block"><span class="meta-key">Prep</span><span class="meta-val">⏱ ${recipe.prep_time} min</span></div>
+        <div class="meta-block"><span class="meta-key">Cook</span><span class="meta-val">🔥 ${recipe.cook_time} min</span></div>
+        <div class="meta-block"><span class="meta-key">Total</span><span class="meta-val">⏰ ${recipe.total_time} min</span></div>
+        <div class="meta-block"><span class="meta-key">Calories</span><span class="meta-val">🔥 ${recipe.calories_per_serving} kcal</span></div>
+      </div>
+    </div>
+
+    <!-- Serving scaler -->
+    <div class="serving-section">
+      <h2 class="section-title">Adjust Servings</h2>
+      <div class="serving-control">
+        <button class="serving-btn" onclick="changeServings(-1)">−</button>
+        <span class="serving-display" id="servingDisplay">${currentServings}</span>
+        <span class="serving-label">servings</span>
+        <button class="serving-btn" onclick="changeServings(1)">+</button>
+      </div>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="serving-section">
+      <h2 class="section-title">Ingredients <span style="font-size:0.9rem;font-weight:400;color:var(--muted)">for ${currentServings} serving${currentServings!==1?'s':''}</span></h2>
+      <div class="ingredients-grid" id="ingredientsGrid">${ingredientsHTML}</div>
+    </div>
+
+    <!-- Nutrients -->
+    <div class="nutrients-section">
+      <h2 class="section-title">Nutrition <span style="font-size:0.9rem;font-weight:400;color:var(--muted)">per serving</span></h2>
+      <div class="nutrients-grid">${nutrientsHTML}</div>
+    </div>
+
+    <!-- Start cooking -->
+    <button class="start-btn" onclick="openRecipeBook()">
+      📖 Open Recipe Book & Start Cooking
+    </button>
+
+    <!-- Steps preview -->
+    <div class="serving-section">
+      <h2 class="section-title">Steps Overview</h2>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        ${(recipe.steps||[]).map((step,i) => `
+          <div style="display:flex;gap:1.2rem;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:14px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(200,87,27,0.15);display:flex;align-items:center;justify-content:center;font-size:0.82rem;color:var(--spice);flex-shrink:0;font-weight:600">${step.step}</div>
+            <div>
+              <div style="font-weight:500;margin-bottom:0.3rem">${step.title}</div>
+              <div style="font-size:0.82rem;color:var(--muted);line-height:1.55">${step.instruction.slice(0,120)}${step.instruction.length>120?'...':''}</div>
+              ${step.duration_seconds > 0 ? `<div style="font-size:0.72rem;color:var(--spice);margin-top:0.4rem">⏱ ${formatTime(step.duration_seconds)}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function changeServings(delta) {
+  const newServings = Math.max(1, Math.min(currentServings + delta, 100));
+  if (newServings === currentServings) return;
+  loadRecipe(newServings);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RECIPE BOOK
+// ══════════════════════════════════════════════════════════════════
+function openRecipeBook() {
+  currentStep = 0;
+  document.getElementById('recipebook').classList.add('open');
+  document.getElementById('rb-recipe-name').textContent = recipe.name;
+  buildStepList();
+  renderStep(0);
+  if (voiceEnabled) speakStep(0);
+  startVoiceCommands();
+}
+
+function closeRecipeBook() {
+  document.getElementById('recipebook').classList.remove('open');
+  stopTimer();
+  stopVoice();
+  stopVoiceCommands();
+}
+
+function buildStepList() {
+  const list = document.getElementById('rb-step-list');
+  list.innerHTML = '';
+  recipe.steps.forEach((step, i) => {
+    const el = document.createElement('div');
+    el.className = 'rb-step-dot';
+    el.id = `rb-dot-${i}`;
+    el.onclick = () => goToStep(i);
+    el.innerHTML = `
+      <div class="dot-num">${step.step}</div>
+      <span style="font-size:0.82rem">${step.title}</span>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function renderStep(index) {
+  const steps = recipe.steps;
+  const step = steps[index];
+  const total = steps.length;
+
+  // Update progress
+  document.getElementById('rb-progress').style.width = ((index+1)/total*100) + '%';
+  document.getElementById('rb-step-counter').textContent = `Step ${index+1} of ${total}`;
+
+  // Update step dots
+  document.querySelectorAll('.rb-step-dot').forEach((dot, i) => {
+    dot.className = 'rb-step-dot' + (i === index ? ' current' : i < index ? ' done' : '');
+    const num = dot.querySelector('.dot-num');
+    num.textContent = i < index ? '✓' : steps[i].step;
+  });
+
+  // Update nav buttons
+  document.getElementById('rb-prev').disabled = index === 0;
+  document.getElementById('rb-next').textContent = index === total - 1 ? 'Finish 🎉' : 'Next Step →';
+
+  // Stop any running timer
+  stopTimer();
+
+  // Render step content
+  const panel = document.getElementById('rb-step-panel');
+
+  // Highlight key cooking terms in instruction
+  let instruction = step.instruction;
+  const keywords = ['medium heat','high heat','low heat','stir','cover','add','cook','boil','reduce','mix','blend','fry','saute','season'];
+  keywords.forEach(kw => {
+    const re = new RegExp(`\\b(${kw})\\b`, 'gi');
+    instruction = instruction.replace(re, '<strong>$1</strong>');
+  });
+
+  const hasTimer = step.duration_seconds > 0;
+
+  panel.innerHTML = `
+    <div>
+      <p class="rb-step-num">Step ${step.step} of ${total}</p>
+      <h2 class="rb-step-title">${step.title}</h2>
+    </div>
+    <p class="rb-step-instruction">${instruction}</p>
+    ${step.tip ? `
+      <div class="rb-tip-box">
+        <span class="rb-tip-icon">💡</span>
+        <p class="rb-tip-text">${step.tip}</p>
+      </div>` : ''}
+    ${hasTimer ? `
+      <div class="rb-timer-section">
+        <p style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Timer</p>
+        <div class="rb-timer-display" id="rb-timer">${formatTime(step.duration_seconds)}</div>
+        <button class="rb-timer-btn" id="rb-timer-btn" onclick="toggleTimer(${step.duration_seconds})">▶ Start Timer</button>
+      </div>` : ''}
+  `;
+
+  // Scroll to top
+  panel.scrollTop = 0;
+}
+
+function goToStep(index) {
+  if (index < 0 || index >= recipe.steps.length) return;
+  currentStep = index;
+  renderStep(index);
+  if (voiceEnabled) speakStep(index);
+}
+
+function nextStep() {
+  const total = recipe.steps.length;
+  if (currentStep >= total - 1) {
+    showFinalScreen();
+  } else {
+    goToStep(currentStep + 1);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) goToStep(currentStep - 1);
+}
+
+function showFinalScreen() {
+  stopTimer();
+  stopVoiceCommands();
+  document.getElementById('rb-body').innerHTML = `
+    <div class="rb-final">
+      <div class="rb-final-icon">🎉</div>
+      <h2 class="rb-final-title">You did it!</h2>
+      <p class="rb-final-sub">Your <strong>${recipe.name}</strong> is ready. Enjoy your meal and share it with those you love!</p>
+      <button class="rb-final-btn" onclick="closeRecipeBook()">← Back to Recipe</button>
+    </div>
+  `;
+  document.getElementById('rb-controls').style.display = 'none';
+  if (voiceEnabled) {
+    speak(`Congratulations! Your ${recipe.name} is ready. Enjoy your meal!`);
+  }
+}
+
+// ── Timer ──────────────────────────────────────────────────────────────────────
+function toggleTimer(totalSecs) {
+  if (timerRunning) stopTimer();
+  else startTimer(totalSecs);
+}
+
+function startTimer(totalSecs) {
+  const btn = document.getElementById('rb-timer-btn');
+  if (!btn) return;
+  if (timerRemaining === 0 || timerRemaining === totalSecs) {
+    timerRemaining = totalSecs;
+  }
+  timerRunning = true;
+  btn.textContent = '⏸ Pause';
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    const display = document.getElementById('rb-timer');
+    const timerBtn = document.getElementById('rb-timer-btn');
+    if (display) display.textContent = formatTime(timerRemaining);
+    if (timerRemaining <= 0) {
+      stopTimer();
+      if (display) { display.textContent = 'Done! ✓'; display.className = 'rb-timer-display done'; }
+      if (timerBtn) timerBtn.textContent = '↺ Restart';
+      if (voiceEnabled) speak('Timer done! Check your dish.');
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timerRunning = false;
+  const btn = document.getElementById('rb-timer-btn');
+  if (btn && btn.textContent.includes('Pause')) btn.textContent = '▶ Resume';
+}
+
+function formatTime(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ── Text-to-Speech ─────────────────────────────────────────────────────────────
+let currentUtterance = null;
+
+function speak(text) {
+  if (!voiceEnabled || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-IN';
+  utter.rate = 0.9;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+
+  // Prefer a natural voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                    voices.find(v => v.lang.startsWith('en'));
+  if (preferred) utter.voice = preferred;
+
+  currentUtterance = utter;
+  window.speechSynthesis.speak(utter);
+}
+
+function stopVoice() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+}
+
+function speakStep(index) {
+  const step = recipe.steps[index];
+  const text = `Step ${step.step}. ${step.title}. ${step.instruction}`;
+  speak(text);
+}
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+  const btn = document.getElementById('rb-voice-toggle');
+  const label = document.getElementById('voiceLabel');
+  if (voiceEnabled) {
+    btn.textContent = '🔊';
+    btn.classList.add('speaking');
+    label.textContent = 'Voice assistant active';
+    speakStep(currentStep);
+  } else {
+    btn.textContent = '🔇';
+    btn.classList.remove('speaking');
+    label.textContent = 'Voice assistant muted';
+    stopVoice();
+  }
+}
+
+// ── Voice Commands ─────────────────────────────────────────────────────────────
+function startVoiceCommands() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR || isVoiceListening) return;
+  voiceRecognition = new SR();
+  voiceRecognition.continuous = true;
+  voiceRecognition.interimResults = false;
+  voiceRecognition.lang = 'en-IN';
+
+  voiceRecognition.onresult = (e) => {
+    const cmd = e.results[e.results.length - 1][0].transcript.trim().toLowerCase();
+    handleVoiceCommand(cmd);
+  };
+  voiceRecognition.onend = () => {
+    if (isVoiceListening) {
+      try { voiceRecognition.start(); } catch(ex) {}
+    }
+  };
+
+  try {
+    voiceRecognition.start();
+    isVoiceListening = true;
+    document.getElementById('voiceLabel').textContent = 'Listening for commands...';
+  } catch(e) {
+    isVoiceListening = false;
+  }
+}
+
+function stopVoiceCommands() {
+  isVoiceListening = false;
+  if (voiceRecognition) {
+    try { voiceRecognition.stop(); } catch(e) {}
+    voiceRecognition = null;
+  }
+}
+
+function handleVoiceCommand(cmd) {
+  console.log('Voice command:', cmd);
+  if (cmd.includes('next') || cmd.includes('done') || cmd.includes('forward')) {
+    nextStep();
+  } else if (cmd.includes('previous') || cmd.includes('back') || cmd.includes('go back')) {
+    prevStep();
+  } else if (cmd.includes('repeat') || cmd.includes('again') || cmd.includes('re-read')) {
+    speakStep(currentStep);
+  } else if (cmd.includes('start timer') || cmd.includes('begin timer') || cmd.includes('timer start')) {
+    const btn = document.getElementById('rb-timer-btn');
+    if (btn) {
+      const step = recipe.steps[currentStep];
+      if (step.duration_seconds > 0) startTimer(step.duration_seconds);
+    }
+  } else if (cmd.includes('stop timer') || cmd.includes('pause timer')) {
+    stopTimer();
+  } else if (cmd.includes('tip') || cmd.includes('hint')) {
+    const step = recipe.steps[currentStep];
+    if (step.tip) speak('Pro tip: ' + step.tip);
+  } else if (cmd.includes('close') || cmd.includes('exit')) {
+    closeRecipeBook();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Init
+// ══════════════════════════════════════════════════════════════════
+loadRecipe(4);
+
+// Ensure voices are loaded for TTS
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices(); // warm up
+  };
+}
+</script>
+</body>
+</html>
