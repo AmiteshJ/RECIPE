@@ -1,6 +1,6 @@
 # Recipe Lens 🍽️
 
-> An AI-powered kitchen assistant that detects vegetables and suggests recipes via voice or camera — no external AI APIs required.
+> A kitchen assistant that detects vegetables and suggests recipes via voice or camera.
 
 ---
 
